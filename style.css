@@ -112,33 +112,11 @@ body {
     color: #ffffff;
 }
 
-.user-email {
+.subtitle {
     font-size: 0.72rem;
     color: var(--text-muted);
     text-overflow: ellipsis;
     overflow: hidden;
-}
-
-.theme-toggle-btn {
-    background: #10252c;
-    border: 1px solid var(--border-subtle);
-    color: var(--accent-cyan);
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition:
-        background 0.2s,
-        color 0.2s;
-}
-
-.theme-toggle-btn:hover {
-    background: var(--border-subtle);
-    color: #fff;
 }
 
 .collapse-bar-row {
@@ -345,22 +323,6 @@ body {
     transform: scale(0.96);
 }
 
-.nav-logout {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    color: #839ea6;
-    font-size: 0.85rem;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: color 0.2s;
-}
-
-.nav-logout:hover {
-    color: #ef4444;
-}
-
 /* ---------------------------------------------- */
 /* 3. AREA CENTRALE DI INTERAZIONE (MAIN VIEWPORT)*/
 /* ---------------------------------------------- */
@@ -442,14 +404,6 @@ body {
     font-weight: 700;
     color: #f0f7f8;
     letter-spacing: -0.02em;
-    text-align: center;
-}
-
-.main-subtitle {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-top: 5px;
-    max-width: 620px;
     text-align: center;
 }
 

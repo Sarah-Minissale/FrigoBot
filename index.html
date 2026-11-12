@@ -24,7 +24,7 @@
             rel="stylesheet"
         />
         <!-- ============================================== -->
-        <!-- FOGLIO DI STILE COMPLETO ED ESPLICATIVO       -->
+        <!-- FOGLIO DI STILE COMPLETO                       -->
         <!-- ============================================== -->
         <link href="style.css" rel="stylesheet" />
     </head>
@@ -72,17 +72,11 @@
                         </div>
                         <div class="user-name-wrapper">
                             <span class="user-name">FrigoBot AI</span>
-                            <span class="user-email">admin@frigobot.ai</span>
+                            <span class="subtitle"
+                                >Aggiorna e gestisci i tuoi alimenti
+                            </span>
                         </div>
                     </div>
-                    <!-- Pulsante visuale per lo stato del sistema / tema -->
-                    <button
-                        class="theme-toggle-btn"
-                        onclick="toggleThemeVisual()"
-                        title="Stato Sistema Online"
-                    >
-                        <i class="fa-solid fa-bolt"></i>
-                    </button>
                 </div>
                 <!-- Pulsante per comprimere la sidebar -->
                 <div class="collapse-bar-row">
@@ -186,16 +180,6 @@
                         <i class="fa-solid fa-plus"></i>
                         <span> Nuova Chat</span>
                     </button>
-                    <!-- Pulsante Logout -->
-                    <div
-                        class="nav-logout"
-                        onclick="
-                            alert('Arrivederci! La tua dispensa è al sicuro.')
-                        "
-                    >
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        <span>Logout</span>
-                    </div>
                 </div>
             </aside>
             <!-- ============================================== -->
@@ -344,14 +328,7 @@
                             </svg>
                         </div>
                         <!-- Titolo principale con branding verificato -->
-                        <h1 class="main-title">
-                            FrigoBot AI - Assistente Gestionale Frigo &amp;
-                            Dispensa
-                        </h1>
-                        <p class="main-subtitle">
-                            Aggiorna scorte, spunta la spesa e gestisci la
-                            conservazione con comandi naturali
-                        </p>
+                        <h1 class="main-title">FrigoBot AI</h1>
                     </div>
                     <!-- ============================================ -->
                     <!-- SEZIONE: BADGE CONTATORI SCORTE IN TEMPO REALE -->

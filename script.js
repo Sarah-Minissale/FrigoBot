@@ -78,6 +78,8 @@ function classifyFood(foodName) {
         "melone",
         "anguria",
         "mirtill",
+        "zucca",
+        "zucche",
         "lampon",
         // Carne
         "carne",
@@ -1090,15 +1092,6 @@ function toggleMic(btn) {
         icon.classList.remove("fa-stop");
         btn.style.color = "#8da6ae";
     }
-}
-
-/* COSA FA: mostra un messaggio sullo stato del sistema.
-   COLLEGAMENTI: è associata al pulsante con il fulmine nella sidebar; al
-   momento non modifica il tema e usa soltanto window.alert(). */
-function toggleThemeVisual() {
-    alert(
-        "Sistema FrigoBot AI attivo in modalità operativa standard (Ottimizzazione dispensa).",
-    );
 }
 
 /* COSA FA: sposta la classe CSS active sulla voce di menu cliccata.
