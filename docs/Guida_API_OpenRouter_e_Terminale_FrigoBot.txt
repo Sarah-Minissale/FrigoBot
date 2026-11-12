@@ -1,0 +1,328 @@
+FRIGOBOT AI
+GUIDA ALLE CHIAVI API, OPENROUTER E AL TERMINALE
+
+Progetto: FrigoBot
+Data: 11 novembre 2026
+
+==========================================================================
+
+SCOPO DEL DOCUMENTO
+
+Questa guida spiega che cosa è stato configurato nel progetto FrigoBot,
+perché serve una chiave API, come viene protetta e quali operazioni sono
+state eseguite nel terminale.
+
+La chiave API reale non è riportata in questo documento.
+
+
+1. CHE COS'È UNA CHIAVE API
+
+Una chiave API è una credenziale segreta che permette a un'applicazione di
+utilizzare un servizio esterno. Nel progetto FrigoBot la chiave autorizza il
+server locale a inviare richieste a OpenRouter.
+
+La chiave serve a:
+
+  - identificare l'account OpenRouter che effettua la richiesta;
+  - autorizzare l'accesso ai modelli di intelligenza artificiale;
+  - applicare limiti di utilizzo, crediti e fatturazione dell'account;
+  - permettere a OpenRouter di rifiutare richieste non autorizzate.
+
+La chiave API deve essere trattata come una password. Chiunque ne possieda
+una copia potrebbe usarla consumando i crediti associati all'account.
+
+
+2. A COSA SERVE OPENROUTER IN FRIGOBOT
+
+OpenRouter è il servizio che riceve i messaggi della chat e li inoltra a un
+modello di intelligenza artificiale. Il progetto usa l'endpoint ufficiale:
+
+  https://openrouter.ai/api/v1/chat/completions
+
+Il modello predefinito configurato è:
+
+  openrouter/auto
+
+Questo router sceglie automaticamente un modello adatto alla richiesta. Il
+modello può essere cambiato modificando OPENROUTER_MODEL nel file .env.
+
+Grazie all'API, FrigoBot può rispondere a richieste aperte come:
+
+  - suggerire ricette usando gli alimenti disponibili;
+  - proporre idee per ridurre gli sprechi;
+  - spiegare conservazione e organizzazione degli alimenti;
+  - calcolare o stimare calorie e macronutrienti;
+  - rispondere a domande che non possono essere gestite con semplici regole
+    JavaScript locali.
+
+Le operazioni applicative, come mostrare l'inventario o aggiungere elementi
+alla lista della spesa, continuano a essere gestite localmente dal progetto.
+Il modello AI non modifica direttamente i dati salvati nel browser.
+
+
+3. PERCHÉ LA CHIAVE NON È STATA MESSA IN UN FILE JSON PUBBLICO
+
+Un file JSON caricato da index.html sarebbe scaricabile dal browser. Anche
+una chiave inserita direttamente in script.js sarebbe visibile tramite gli
+strumenti di sviluppo del browser.
+
+Per questo motivo la chiave è stata inserita in un file chiamato .env:
+
+  OPENROUTER_API_KEY=sk-or-v1-...
+  OPENROUTER_MODEL=openrouter/auto
+  PORT=3000
+
+Il file .env viene letto soltanto dal processo Node.js. Il browser non lo
+riceve e il server FrigoBot serve soltanto una lista controllata di file
+pubblici: index.html, style.css e script.js. La chat si trova direttamente
+dentro index.html, quindi non esiste più una pagina chat.html separata.
+
+Il file .gitignore contiene inoltre:
+
+  node_modules/
+  .env
+  .DS_Store
+
+La riga .env impedisce che la chiave venga aggiunta accidentalmente a un
+repository Git. Il file .env.example contiene invece soltanto un esempio e
+può essere condiviso perché non include la chiave reale.
+
+
+4. FLUSSO DELLA RICHIESTA
+
+Il percorso di un messaggio è il seguente:
+
+  Browser / index.html
+          |
+          | POST /api/chat
+          | messaggi + contesto inventario/spesa
+          | NESSUNA chiave API
+          v
+  Server locale Node.js (server.js)
+          |
+          | legge OPENROUTER_API_KEY da .env
+          | aggiunge Authorization: Bearer ...
+          v
+  OpenRouter
+          |
+          | seleziona il modello e genera la risposta
+          v
+  Server locale -> Browser -> messaggio visualizzato nella chat
+
+Questo schema è chiamato spesso "backend proxy": il browser parla con il
+proprio server e il server parla con il servizio esterno mantenendo segreta
+la credenziale.
+
+
+5. FILE CREATI O MODIFICATI
+
+.env
+  Contiene la chiave reale, il modello scelto e la porta locale. È privato.
+
+.env.example
+  Mostra quali variabili sono necessarie, senza contenere segreti.
+
+.gitignore
+  Esclude .env, node_modules e file di sistema dal versionamento Git.
+
+server.js
+  Avvia il server locale, serve i file del sito e crea l'endpoint /api/chat.
+  Legge la chiave, prepara il prompt di sistema, contatta OpenRouter e
+  restituisce al browser soltanto la risposta testuale.
+
+package.json
+  Descrive il progetto Node e contiene i comandi npm run dev e npm start.
+
+package-lock.json
+  Registra le versioni esatte delle dipendenze installate da npm.
+
+node_modules/
+  Contiene i pacchetti installati. È generata automaticamente e non va
+  modificata manualmente.
+
+script.js
+  Invia i messaggi a /api/chat, passa il contesto di inventario e spesa,
+  visualizza "Sto pensando..." e gestisce risposte ed errori.
+
+
+6. COSA È STATO FATTO NEL TERMINALE
+
+6.1 Verifica di Node.js e npm
+
+  node -v
+
+Risultato rilevato:
+
+  v24.22.1
+
+Il comando controlla la versione di Node.js installata.
+
+  npm -v
+
+Risultato rilevato:
+
+  11.19.1
+
+npm è il gestore dei pacchetti incluso con Node.js.
+
+
+6.2 Inizializzazione del progetto Node
+
+  npm init -y
+
+Il comando ha creato package.json usando valori iniziali standard. Non ha
+installato dipendenze e, da solo, non crea necessariamente node_modules.
+
+
+6.3 Installazione di live-server
+
+  npm install --save-dev live-server
+
+Il comando ha:
+
+  - scaricato live-server come dipendenza di sviluppo;
+  - creato node_modules;
+  - aggiornato package.json;
+  - creato o aggiornato package-lock.json.
+
+live-server è stato utile nella prima fase per visualizzare HTML, CSS e
+JavaScript. Dopo l'integrazione OpenRouter non viene più usato per avviare
+FrigoBot, perché non può custodire la chiave né fornire /api/chat.
+
+
+6.4 Avvio attuale del progetto
+
+  cd /Users/sarahminissale/Desktop/frigoBot
+  npm run dev
+
+Lo script dev esegue:
+
+  node --env-file=.env server.js
+
+Node legge le variabili da .env e avvia FrigoBot all'indirizzo:
+
+  http://localhost:3000
+
+È importante aprire questo indirizzo nel browser. Aprire index.html con un
+doppio clic non avvia il backend e quindi /api/chat non sarebbe disponibile.
+
+
+6.5 Arresto del server
+
+Per fermare il server nel terminale si usa:
+
+  Control + C
+
+Questo termina il processo Node ma non cancella né modifica i file.
+
+
+6.6 Controlli di sintassi
+
+  node --check server.js
+  node --check script.js
+
+Questi comandi verificano la sintassi JavaScript senza avviare il progetto.
+
+
+7. COSA SUCCEDE QUANDO SI ESEGUE NPM RUN DEV
+
+1. npm legge la sezione scripts di package.json.
+2. Viene eseguito node --env-file=.env server.js.
+3. Node carica OPENROUTER_API_KEY, OPENROUTER_MODEL e PORT.
+4. server.js si mette in ascolto su localhost:3000.
+5. Il browser richiede index.html al server.
+6. Quando viene inviato un messaggio, script.js chiama POST /api/chat.
+7. server.js contatta OpenRouter e restituisce la risposta.
+
+Il terminale deve rimanere aperto mentre si usa FrigoBot. La presenza del
+messaggio "FrigoBot disponibile su http://localhost:3000" indica che il
+server è partito correttamente.
+
+
+8. DATI INVIATI AL MODELLO
+
+Per rendere le risposte pertinenti, il browser invia al server:
+
+  - gli ultimi messaggi della conversazione;
+  - nomi, quantità, categorie e posizioni dell'inventario;
+  - nomi, quantità e categorie della lista della spesa.
+
+Il server aggiunge un'istruzione che presenta il modello come FrigoBot e gli
+chiede di rispondere in italiano, in modo breve e concreto. Il modello viene
+anche istruito a non dichiarare di aver modificato inventario o lista.
+
+La cronologia e i dati di inventario sono salvati nel localStorage del
+browser. La chiave API, invece, resta nel processo Node e non viene salvata
+nel localStorage.
+
+
+9. SICUREZZA E BUONE PRATICHE
+
+  - Non incollare mai la chiave in chat, email, screenshot o documenti.
+  - Non inserire la chiave in index.html, script.js o in un JSON pubblico.
+  - Non pubblicare il file .env.
+  - Impostare un limite di spesa nell'account OpenRouter.
+  - Revocare e rigenerare subito la chiave se viene esposta.
+  - Usare una chiave separata per ogni progetto importante.
+  - Dopo aver modificato .env, fermare e riavviare npm run dev.
+
+Nel pannello Network del browser è normale vedere una chiamata a /api/chat.
+Non deve invece comparire il valore di OPENROUTER_API_KEY.
+
+
+10. ERRORI COMUNI
+
+"Chiave OpenRouter non configurata nel file .env"
+  OPENROUTER_API_KEY è vuota. Inserire la chiave dopo il segno = e riavviare
+  il server.
+
+Errore 401 - Unauthorized
+  La chiave è errata, revocata o copiata in modo incompleto.
+
+Errore 402 - Payment Required
+  L'account non dispone dei crediti necessari per il modello selezionato.
+
+Errore 429 - Too Many Requests
+  È stato raggiunto un limite di richieste. Attendere e riprovare.
+
+La chat dice che /api/chat non è disponibile
+  Il sito è stato aperto direttamente oppure con live-server. Usare
+  npm run dev e aprire http://localhost:3000.
+
+La porta 3000 è già occupata
+  Fermare il vecchio server con Control + C. In alternativa modificare PORT
+  in .env, per esempio PORT=3001, e aprire il nuovo indirizzo.
+
+Le modifiche a server.js non si vedono
+  Fermare e riavviare npm run dev. Le modifiche a HTML, CSS e JavaScript del
+  browser richiedono normalmente anche un aggiornamento della pagina.
+
+
+11. RIEPILOGO
+
+La chiave API collega FrigoBot a OpenRouter, ma non viene mai consegnata al
+browser. Il frontend invia i messaggi al server locale; server.js legge la
+chiave da .env, contatta OpenRouter e restituisce la risposta. npm gestisce
+il progetto e npm run dev avvia l'intero flusso su localhost:3000.
+
+La scelta di usare .env e un backend proxy protegge la credenziale e rende
+la struttura adatta a successive evoluzioni del progetto.
+
+
+FONTI UFFICIALI
+
+OpenRouter - API Chat Completions
+https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request
+
+OpenRouter - Gestione chiavi API
+https://openrouter.ai/settings/keys
+
+OpenRouter - Auto Router
+https://openrouter.ai/openrouter/auto/overview
+
+Node.js
+https://nodejs.org/
+
+==========================================================================
+
+Fine del documento.

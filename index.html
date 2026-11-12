@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>FrigoBot AI - Assistente Gestionale Frigo &amp; Dispensa</title>
+        <!-- ============================================== -->
+        <!-- CARICAMENTO ICONE E FONT ESTERNI               -->
+        <!-- ============================================== -->
+        <!-- Font Awesome 6 per icone gestionali e simboli UI -->
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            rel="stylesheet"
+        />
+        <!-- Google Fonts: Inter per leggibilità e stile pulito -->
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link
+            crossorigin=""
+            href="https://fonts.gstatic.com"
+            rel="preconnect"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+            rel="stylesheet"
+        />
+        <!-- ============================================== -->
+        <!-- FOGLIO DI STILE COMPLETO ED ESPLICATIVO       -->
+        <!-- ============================================== -->
+        <link href="style.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- ============================================== -->
+        <!-- CONTENITORE GENERALE DELL'APPLICAZIONE         -->
+        <!-- ============================================== -->
+        <div data-purpose="application-root" id="app-container">
+            <!-- ============================================== -->
+            <!-- SEZIONE: SIDEBAR DI NAVIGAZIONE                -->
+            <!-- ============================================== -->
+            <aside data-purpose="main-sidebar" id="sidebar">
+                <!-- ============================================ -->
+                <!-- SEZIONE: HEADER UTENTE & STATUS DISPENSA     -->
+                <!-- ============================================ -->
+                <div
+                    class="user-profile-header"
+                    data-purpose="user-profile-box"
+                >
+                    <div class="user-meta">
+                        <!-- Icona FrigoBot vettoriale trasparente senza riquadro grigio -->
+                        <div class="avatar-icon-wrap" title="FrigoBot Avatar">
+                            <svg
+                                class="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                style="width: 24px; height: 24px"
+                                viewBox="0 0 24 24"
+                            >
+                                <!-- Illustrazione Frigorifero Smart Vettoriale -->
+                                <rect
+                                    height="20"
+                                    rx="3"
+                                    width="16"
+                                    x="4"
+                                    y="2"
+                                ></rect>
+                                <line x1="4" x2="20" y1="10" y2="10"></line>
+                                <line x1="8" x2="8" y1="5" y2="7"></line>
+                                <line x1="8" x2="8" y1="13" y2="16"></line>
+                            </svg>
+                        </div>
+                        <div class="user-name-wrapper">
+                            <span class="user-name">FrigoBot AI</span>
+                            <span class="user-email">admin@frigobot.ai</span>
+                        </div>
+                    </div>
+                    <!-- Pulsante visuale per lo stato del sistema / tema -->
+                    <button
+                        class="theme-toggle-btn"
+                        onclick="toggleThemeVisual()"
+                        title="Stato Sistema Online"
+                    >
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+                <!-- Pulsante per comprimere la sidebar -->
+                <div class="collapse-bar-row">
+                    <button
+                        class="sidebar-collapse-btn"
+                        id="collapseSidebarBtn"
+                        onclick="toggleSidebar()"
+                        title="Comprimi barra laterale"
+                    >
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
+                </div>
+                <!-- ============================================ -->
+                <!-- SEZIONE: VOCI DI MENU OPERATIVE              -->
+                <!-- ============================================ -->
+                <nav class="nav-list" data-purpose="sidebar-navigation">
+                    <!-- Gruppo Moduli Operativi -->
+                    <div class="nav-section-title" style="color: #4fdbc8">
+                        Moduli Operativi
+                    </div>
+                    <a
+                        class="nav-item active"
+                        href="javascript:void(0)"
+                        onclick="activateNav(this)"
+                    >
+                        <i class="fa-solid fa-house"></i>
+                        <span>Chatbot Gestionale</span>
+                    </a>
+                    <a
+                        class="nav-item"
+                        href="javascript:void(0)"
+                        onclick="openPantryModal('alimenti')"
+                    >
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Inventario (Frigo &amp; Dispensa)</span>
+                    </a>
+                    <a
+                        class="nav-item"
+                        href="javascript:void(0)"
+                        onclick="openPantryModal('spesa')"
+                    >
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Lista della Spesa</span>
+                    </a>
+
+                    <!-- Separatore logico tra moduli primari e secondari -->
+                    <div class="nav-divider"></div>
+                    <!-- Gruppo Funzioni Secondarie -->
+                    <div class="nav-section-title" style="color: #8faab1">
+                        Funzioni Secondarie
+                    </div>
+                    <a
+                        class="nav-item"
+                        href="javascript:void(0)"
+                        onclick="
+                            insertPrompt(
+                                'Calcola le calorie e macronutrienti per 150g di pasta al salmone',
+                            )
+                        "
+                    >
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>Calcolo Calorie</span>
+                    </a>
+                    <a
+                        class="nav-item"
+                        href="javascript:void(0)"
+                        onclick="
+                            insertPrompt(
+                                'Cosa posso cucinare al volo per non sprecare gli ingredienti in scadenza nel frigo?',
+                            )
+                        "
+                        style="opacity: 0.85"
+                    >
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>Ricette &amp; Svuota Frigo</span>
+                    </a>
+                    <a
+                        class="nav-item"
+                        href="javascript:void(0)"
+                        onclick="activateNav(this)"
+                    >
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Impostazioni</span>
+                    </a>
+
+                    <div class="nav-divider"></div>
+                    <div class="nav-section-title home-chat-history-heading">
+                        Chat salvate
+                    </div>
+                    <div
+                        class="home-chat-history-list"
+                        id="homeChatHistoryList"
+                    ></div>
+                </nav>
+                <!-- ============================================ -->
+                <!-- SEZIONE: FOOTER CON NUOVA CHAT E LOGOUT      -->
+                <!-- ============================================ -->
+                <div class="sidebar-footer" data-purpose="sidebar-actions">
+                    <!-- Pulsante Nuova Chat -->
+                    <button class="btn-new-chat" onclick="resetChat()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span> Nuova Chat</span>
+                    </button>
+                    <!-- Pulsante Logout -->
+                    <div
+                        class="nav-logout"
+                        onclick="
+                            alert('Arrivederci! La tua dispensa è al sicuro.')
+                        "
+                    >
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            </aside>
+            <!-- ============================================== -->
+            <!-- SEZIONE: MAIN CHAT VIEWPORT (AREA PRINCIPALE)  -->
+            <!-- ============================================== -->
+            <main data-purpose="chat-viewport" id="main-content">
+                <!-- Pulsante flottante per riaprire la barra laterale quando è chiusa -->
+                <button
+                    class="floating-expand-btn"
+                    id="expandSidebarBtn"
+                    onclick="toggleSidebar()"
+                    title="Mostra barra laterale"
+                >
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <!-- Contenitore centrale di presentazione e dialogo -->
+                <div class="chat-container">
+                    <!-- ============================================ -->
+                    <!-- SEZIONE: MASCOTTE FRIGOBOT & TITOLI HERO     -->
+                    <!-- ============================================ -->
+                    <div class="hero-mascot-wrapper" data-purpose="hero-mascot">
+                        <!-- Illustrazione FrigoBot AI vettoriale pura (senza riquadri grigi di sfondo) -->
+                        <div class="mascot-svg-box">
+                            <svg
+                                fill="none"
+                                style="width: 100%; height: 100%"
+                                viewBox="0 0 120 120"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <!-- Corpo Frigo con angoli smussati e sfumatura ciano/blu trasparente -->
+                                <defs>
+                                    <linearGradient
+                                        id="frigoGradient"
+                                        x1="0%"
+                                        x2="100%"
+                                        y1="0%"
+                                        y2="100%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#4fdbc8"
+                                        ></stop>
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#14b8a6"
+                                        ></stop>
+                                    </linearGradient>
+                                    <linearGradient
+                                        id="bodyGradient"
+                                        x1="0%"
+                                        x2="0%"
+                                        y1="0%"
+                                        y2="100%"
+                                    >
+                                        <stop
+                                            offset="0%"
+                                            stop-color="#1c4754"
+                                        ></stop>
+                                        <stop
+                                            offset="100%"
+                                            stop-color="#0a2128"
+                                        ></stop>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Sagoma principale frigorifero -->
+                                <rect
+                                    fill="url(#bodyGradient)"
+                                    height="88"
+                                    rx="14"
+                                    stroke="#4fdbc8"
+                                    stroke-width="3"
+                                    width="72"
+                                    x="24"
+                                    y="16"
+                                ></rect>
+                                <!-- Separatore freezer/frigorifero -->
+                                <line
+                                    stroke="#4fdbc8"
+                                    stroke-dasharray="3 3"
+                                    stroke-width="2.5"
+                                    x1="24"
+                                    x2="96"
+                                    y1="46"
+                                    y2="46"
+                                ></line>
+                                <!-- Maniglia superiore (Freezer) -->
+                                <rect
+                                    fill="#7ed6df"
+                                    height="12"
+                                    rx="2"
+                                    width="4"
+                                    x="30"
+                                    y="26"
+                                ></rect>
+                                <!-- Maniglia inferiore (Frigorifero) -->
+                                <rect
+                                    fill="#7ed6df"
+                                    height="24"
+                                    rx="2"
+                                    width="4"
+                                    x="30"
+                                    y="54"
+                                ></rect>
+                                <!-- Visore digitale con occhietti espressivi IA -->
+                                <rect
+                                    fill="#03161c"
+                                    height="12"
+                                    rx="6"
+                                    stroke="#327a89"
+                                    stroke-width="1.5"
+                                    width="42"
+                                    x="46"
+                                    y="26"
+                                ></rect>
+                                <circle
+                                    cx="58"
+                                    cy="32"
+                                    fill="#4fdbc8"
+                                    r="2.5"
+                                ></circle>
+                                <circle
+                                    cx="76"
+                                    cy="32"
+                                    fill="#4fdbc8"
+                                    r="2.5"
+                                ></circle>
+                                <!-- Simbolo fogliolina eco / anti-spreco sul pannello inferiore -->
+                                <path
+                                    d="M68 64 C68 56, 78 56, 78 56 C78 56, 78 66, 70 70 C68 71, 68 66, 68 64 Z"
+                                    fill="#4fdbc8"
+                                ></path>
+                                <path
+                                    d="M68 70 L74 62"
+                                    stroke="#003731"
+                                    stroke-linecap="round"
+                                    stroke-width="1.5"
+                                ></path>
+                                <!-- Onde radar di segnale smart -->
+                                <path
+                                    d="M52 10 Q60 5 68 10"
+                                    fill="none"
+                                    stroke="#7bd0ff"
+                                    stroke-linecap="round"
+                                    stroke-width="2"
+                                ></path>
+                            </svg>
+                        </div>
+                        <!-- Titolo principale con branding verificato -->
+                        <h1 class="main-title">
+                            FrigoBot AI - Assistente Gestionale Frigo &amp;
+                            Dispensa
+                        </h1>
+                        <p class="main-subtitle">
+                            Aggiorna scorte, spunta la spesa e gestisci la
+                            conservazione con comandi naturali
+                        </p>
+                    </div>
+                    <!-- ============================================ -->
+                    <!-- SEZIONE: BADGE CONTATORI SCORTE IN TEMPO REALE -->
+                    <!-- ============================================ -->
+                    <div class="stock-badge-container">
+                        <span
+                            style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 5px;
+                            "
+                        >
+                            <span style="color: #4fdbc8">🧊</span>
+                            <b>Frigo:</b>
+                            <span id="fridgeItemCount">0</span> alimenti
+                        </span>
+                        <span class="badge-sep">|</span>
+                        <span
+                            style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 5px;
+                            "
+                        >
+                            <span style="color: #7bd0ff">❄️</span>
+                            <b>Freezer:</b>
+                            <span id="freezerItemCount">0</span> alimenti
+                        </span>
+                        <span class="badge-sep">|</span>
+                        <span
+                            style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 5px;
+                            "
+                        >
+                            <span style="color: #ffb95f">🥫</span>
+                            <b>Dispensa:</b>
+                            <span id="pantryItemCount">0</span> alimenti
+                        </span>
+                        <span class="badge-sep">|</span>
+                        <span
+                            style="
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 5px;
+                            "
+                        >
+                            <span style="color: #86efac">🛒</span>
+                            <b>Da acquistare:</b>
+                            <span id="shoppingItemCount">4</span>
+                        </span>
+                    </div>
+                    <!-- ============================================ -->
+                    <!-- SEZIONE: CONVERSAZIONE CON FRIGOBOT         -->
+                    <!-- ============================================ -->
+                    <section
+                        aria-label="Conversazione con FrigoBot"
+                        aria-live="polite"
+                        class="chat-conversation"
+                        hidden
+                        id="chatConversation"
+                    >
+                        <div class="chat-messages" id="chatMessages"></div>
+                    </section>
+                    <!-- ============================================ -->
+                    <!-- SEZIONE: BARRA DI INPUT CONVERSAZIONALE      -->
+                    <!-- ============================================ -->
+                    <div
+                        class="prompt-bar-container"
+                        data-purpose="chat-input-bar"
+                    >
+                        <div class="prompt-bar">
+                            <!-- Input per testo comandi naturali -->
+                            <input
+                                class="prompt-input"
+                                id="userPromptInput"
+                                onkeypress="handleKeyPress(event)"
+                                placeholder="Scrivi un messaggio a FrigoBot..."
+                                type="text"
+                            />
+                            <!-- Controlli: Dettatura vocale e Invio comando -->
+                            <div class="prompt-actions">
+                                <button
+                                    class="mic-button"
+                                    onclick="toggleMic(this)"
+                                    title="Dettatura Vocale Operazione"
+                                >
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                                <button
+                                    class="send-button"
+                                    onclick="sendPrompt()"
+                                    title="Invia messaggio"
+                                >
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- fine .chat-container -->
+            </main>
+        </div>
+        <!-- fine #app-container -->
+        <!-- ============================================== -->
+        <!-- MODALE POPUP PER CONSULTAZIONE INVENTARIO/SPESA -->
+        <!-- ============================================== -->
+        <div
+            class="modal-backdrop"
+            data-purpose="interactive-modal"
+            id="pantryModal"
+            onclick="closeModalOnBackdrop(event)"
+        >
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h3 id="modalTitle">
+                        <i
+                            class="fa-solid fa-boxes-stacked"
+                            style="color: #7ed6df; margin-right: 8px"
+                        ></i>
+                        Alimenti Acquistati in Dispensa
+                    </h3>
+                    <button class="modal-close-btn" onclick="closeModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="modalBody">
+                    <!-- Contenuto dinamico inserito via JS -->
+                </div>
+            </div>
+        </div>
+        <!-- ============================================== -->
+        <!-- LOGICA E SCRIPT DI INTERATTIVITÀ               -->
+        <!-- ============================================== -->
+        <script src="script.js"></script>
+    </body>
+</html>
